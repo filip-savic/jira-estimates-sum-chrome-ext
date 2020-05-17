@@ -1,0 +1,34 @@
+{
+    "name": "Jira Estimates Sum",
+    "version": "1.0.0",
+    "description": "Sum of Jira point and time estimates for columns and total for sprint",
+    "permissions": [
+        "tabs",
+        "webNavigation",
+        "https://*.atlassian.net/secure/RapidBoard.jspa*",
+        "https://*.atlassian.net/jira/software/projects/*/boards/*"
+    ],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "content_scripts": [
+        {
+          "matches": [
+              "https://*.atlassian.net/secure/RapidBoard.jspa*",
+              "https://*.atlassian.net/jira/software/projects/*/boards/*"
+            ],
+          "js": [
+              "index.js"
+            ],
+          "css": ["style.css"]
+        }
+    ],
+    "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    },
+    "manifest_version": 2
+}

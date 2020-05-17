@@ -1,0 +1,17 @@
+.JiraEstimatesSum-TotalSum {
+	font-weight: bold !important;
+	text-transform: none;
+	vertical-align: middle;
+}
+
+.JiraEstimatesSum-TotalSum--nextGen {
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+.JiraEstimatesSum-ColSum {
+	margin-left: 5px;
+	margin-right: 10px;
+	font-weight: bold !important;
+	text-transform: none;
+}
