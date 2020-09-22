@@ -136,19 +136,59 @@
 				return sortedEstimates;
 			});
 
-			let flatEstimates = {};
+			let laneEstimates = {};
 
 			parsedEstimates.forEach((timeEstimate) => {
 				if (timeEstimate) {
 					for (let [key, value] of Object.entries(timeEstimate)) {
-						if (flatEstimates[key]) {
-							flatEstimates[key] = Number(flatEstimates[key]) + Number(value);
+						if (laneEstimates[key]) {
+							laneEstimates[key] = Number(laneEstimates[key]) + Number(value);
 						} else {
-							flatEstimates[key] = value;
+							laneEstimates[key] = value;
 						}
 					}
 				}
 			});
+
+			/**
+			 * Sum up values to jira defaults (60m, 8h, 5d)
+			 */
+
+			if (laneEstimates['m'] && laneEstimates['m'] >= 60) {
+				const extraHours = Math.floor(laneEstimates['m'] / 60);
+
+				laneEstimates['m'] = laneEstimates['m'] % 60;
+
+				if (laneEstimates['h']) {
+					laneEstimates['h'] = laneEstimates['h'] + extraHours;
+				} else {
+					laneEstimates['h'] = extraHours;
+				}
+			}
+
+			if (laneEstimates['h'] && laneEstimates['h'] >= 8) {
+				const extraDays = Math.floor(laneEstimates['h'] / 8);
+
+				laneEstimates['h'] = laneEstimates['h'] % 8;
+
+				if (laneEstimates['d']) {
+					laneEstimates['d'] = laneEstimates['d'] + extraDays;
+				} else {
+					laneEstimates['d'] = extraDays;
+				}
+			}
+
+			if (laneEstimates['d'] && laneEstimates['d'] >= 5) {
+				const extraWeeks = Math.floor(laneEstimates['d'] / 5);
+
+				laneEstimates['d'] = laneEstimates['d'] % 5;
+
+				if (laneEstimates['w']) {
+					laneEstimates['w'] = laneEstimates['w'] + extraWeeks;
+				} else {
+					laneEstimates['w'] = extraWeeks;
+				}
+			}
 
 			let formattedSum = '';
 
@@ -156,8 +196,8 @@
 			 * Add up values by key and sort them properly.
 			 */
 			for (let [key, value] of Object.entries(timeEstimateChars)) {
-				if (flatEstimates[value]) {
-					formattedSum = `${formattedSum} ${flatEstimates[value]}${value}`;
+				if (laneEstimates[value]) {
+					formattedSum = `${formattedSum} ${laneEstimates[value]}${value}`;
 				}
 			}
 
