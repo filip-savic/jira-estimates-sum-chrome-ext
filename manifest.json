@@ -1,6 +1,6 @@
 {
     "name": "Jira Estimates Sum",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Sum of Jira point and time estimates for columns and total for sprint",
     "permissions": [
         "tabs",
