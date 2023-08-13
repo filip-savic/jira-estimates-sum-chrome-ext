@@ -43,7 +43,7 @@
 		setupBoardType: function () {
 			const $laneColsClassic = $(".ghx-swimlane .ghx-column");
 			const $laneColsNextGen = $(
-				".__board-test-hook__card-list-container"
+				'[data-test-id="platform-board-kit.ui.board.scroll.board-scroll"]'
 			);
 
 			if ($laneColsClassic.length) {
@@ -59,7 +59,6 @@
 
 		setupSelectors: function () {
 			sumElTag = "aui-badge";
-			colSumElClass = "JiraEstimatesSum-ColSum";
 
 			if (this.isBoardTypeClassic) {
 				headerColsSelector = ".ghx-column-headers .ghx-column";
@@ -68,6 +67,7 @@
 
 				sprintTitleSelector = "#subnav-title";
 
+				colSumElClass = "JiraEstimatesSum-ColSum";
 				totalSumElClass = "JiraEstimatesSum-TotalSum";
 
 				observeLoadingIndicatorSelector = ".adg-throbber";
@@ -77,16 +77,19 @@
 			} else if (this.isBoardTypeNextGen) {
 				headerColsSelector =
 					'[data-test-id="platform-board-kit.common.ui.column-header.header.column-header-container"]';
-				laneColsSelector = ".__board-test-hook__card-list-container";
+				laneColsSelector =
+					'[data-component-selector="platform-board-kit.ui.column.draggable-column"]';
 				estimateSelector =
-					'[data-test-id="platform-board-kit.ui.card.card"]';
+					'[data-testid="software-board.common.fields.estimate-field.static.estimate-wrapper"]';
 
 				sprintTitleSelector =
-					'[data-test-id="software-board.board"] h2';
+					'[data-test-id="software-board.board"] h1';
 
+				colSumElClass = "JiraEstimatesSum-ColSum--nextGen";
 				totalSumElClass = "JiraEstimatesSum-TotalSum--nextGen";
 
-				observeColSelector = ".__board-test-hook__card-list-container";
+				observeColSelector =
+					'[data-component-selector="platform-board-kit.ui.column.draggable-column"]';
 				observeIssuesSelector =
 					'[data-test-id="platform-board-kit.ui.card.card"]';
 			}
@@ -110,9 +113,7 @@
 					if (this.isBoardTypeClassic) {
 						return $estimate.textContent;
 					} else if (this.isBoardTypeNextGen) {
-						return $estimate.lastChild.lastChild.children[0]
-							.lastChild.lastChild.lastChild.lastChild.lastChild
-							.lastChild.lastChild.lastChild.textContent;
+						return $estimate.textContent;
 					}
 				})
 				.filter((estimate) => typeof estimate === "string")
@@ -250,7 +251,7 @@
 						if (this.isBoardTypeClassic) {
 							return $laneCol.dataset.columnId === id;
 						} else if (this.isBoardTypeNextGen) {
-							return $laneCol.dataset.rbdDroppableId.includes(id);
+							return $laneCol.dataset.rbdDraggableId.includes(id);
 						}
 					})
 					.reduce((laneColSum, $laneCol) => {
@@ -264,9 +265,7 @@
 							$estimates = Array.from(
 								$laneCol.querySelectorAll(estimateSelector)
 							).map(($issue) => {
-								return $issue.lastChild.lastChild.children[0]
-									.lastChild.lastChild.lastChild.lastChild
-									.lastChild.lastChild.lastChild.lastChild;
+								return $issue;
 							});
 						}
 
@@ -416,11 +415,7 @@
 					},
 					// estimates
 					{
-						$elements: $(estimateSelector).map(($issue) => {
-							return $issue.lastChild.lastChild.children[0]
-								.lastChild.lastChild.lastChild.lastChild
-								.lastChild.lastChild.lastChild;
-						}),
+						$elements: $(estimateSelector),
 						options: { childList: true },
 					},
 				];
