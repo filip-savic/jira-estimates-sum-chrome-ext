@@ -1,7 +1,6 @@
-'use strict';
+"use strict";
 
-(function() {
-
+(function () {
 	let tabsToListenTo = {};
 
 	/**
@@ -11,9 +10,8 @@
 	 */
 	chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		if (message.startListening === true) {
-
 			tabsToListenTo[sender.tab.id] = true;
-			sendResponse({ action: 'backgroundListeningToTab' });
+			sendResponse({ action: "backgroundListeningToTab" });
 		}
 
 		return true;
@@ -21,13 +19,15 @@
 
 	chrome.tabs.onActivated.addListener((tabs) => {
 		if (tabsToListenTo[tabs.tabId]) {
-			chrome.tabs.sendMessage(tabs.tabId, { action: 'onActivated' });
+			chrome.tabs.sendMessage(tabs.tabId, { action: "onActivated" });
 		}
 	});
 
 	chrome.webNavigation.onHistoryStateUpdated.addListener((tabs) => {
 		if (tabsToListenTo[tabs.tabId]) {
-			chrome.tabs.sendMessage(tabs.tabId, { action: 'onHistoryStateUpdated' });
+			chrome.tabs.sendMessage(tabs.tabId, {
+				action: "onHistoryStateUpdated",
+			});
 		}
 	});
 
@@ -38,5 +38,4 @@
 	chrome.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
 		delete tabsToListenTo[removedTabId];
 	});
-
-}());
+})();

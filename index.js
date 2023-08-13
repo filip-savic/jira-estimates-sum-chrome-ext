@@ -1,5 +1,4 @@
-(function() {
-
+(function () {
 	let headerColsSelector;
 	let laneColsSelector;
 	let estimateSelector;
@@ -13,22 +12,21 @@
 	let observeIssuesSelector;
 	let observeRefreshSelector;
 
-	const timeEstimateChars = ['w', 'd', 'h', 'm'];
+	const timeEstimateChars = ["w", "d", "h", "m"];
 
 	function $(selector) {
 		return Array.from(document.querySelectorAll(selector));
 	}
 
 	const JiraEstimatesSum = {
-
-		init: function() {
-			window.addEventListener('load', () => {
+		init: function () {
+			window.addEventListener("load", () => {
 				this.main();
 				this.startBackgroundScriptListeners();
 			});
 		},
 
-		main: function() {
+		main: function () {
 			if (this.setupBoardType()) {
 				this.setupSelectors();
 				this.setupElements();
@@ -42,9 +40,11 @@
 			}
 		},
 
-		setupBoardType: function() {
-			const $laneColsClassic = $('.ghx-swimlane .ghx-column');
-			const $laneColsNextGen = $('.__board-test-hook__card-list-container');
+		setupBoardType: function () {
+			const $laneColsClassic = $(".ghx-swimlane .ghx-column");
+			const $laneColsNextGen = $(
+				".__board-test-hook__card-list-container"
+			);
 
 			if ($laneColsClassic.length) {
 				this.isBoardTypeClassic = true;
@@ -57,38 +57,42 @@
 			return false;
 		},
 
-		setupSelectors: function() {
-			sumElTag = 'aui-badge';
-			colSumElClass = 'JiraEstimatesSum-ColSum';
+		setupSelectors: function () {
+			sumElTag = "aui-badge";
+			colSumElClass = "JiraEstimatesSum-ColSum";
 
 			if (this.isBoardTypeClassic) {
-				headerColsSelector = '.ghx-column-headers .ghx-column';
-				laneColsSelector = '.ghx-swimlane .ghx-column';
-				estimateSelector = '.ghx-estimate';
+				headerColsSelector = ".ghx-column-headers .ghx-column";
+				laneColsSelector = ".ghx-swimlane .ghx-column";
+				estimateSelector = ".ghx-estimate";
 
-				sprintTitleSelector = '#subnav-title';
+				sprintTitleSelector = "#subnav-title";
 
-				totalSumElClass = 'JiraEstimatesSum-TotalSum';
+				totalSumElClass = "JiraEstimatesSum-TotalSum";
 
-				observeLoadingIndicatorSelector = '.adg-throbber';
-				observeSwimlanesSelector = '.ghx-pool';
-				observeIssuesSelector = '.ghx-wrap-issue';
-				observeRefreshSelector = '.ghx-column-header-group';
+				observeLoadingIndicatorSelector = ".adg-throbber";
+				observeSwimlanesSelector = ".ghx-pool";
+				observeIssuesSelector = ".ghx-wrap-issue";
+				observeRefreshSelector = ".ghx-column-header-group";
 			} else if (this.isBoardTypeNextGen) {
-				headerColsSelector = '[data-test-id="platform-board-kit.common.ui.column-header.header.column-header-container"]';
-				laneColsSelector = '.__board-test-hook__card-list-container';
-				estimateSelector = '[data-test-id="platform-board-kit.ui.card.card"]';
+				headerColsSelector =
+					'[data-test-id="platform-board-kit.common.ui.column-header.header.column-header-container"]';
+				laneColsSelector = ".__board-test-hook__card-list-container";
+				estimateSelector =
+					'[data-test-id="platform-board-kit.ui.card.card"]';
 
-				sprintTitleSelector = '[data-test-id="software-board.board"] h2';
+				sprintTitleSelector =
+					'[data-test-id="software-board.board"] h2';
 
-				totalSumElClass = 'JiraEstimatesSum-TotalSum--nextGen';
+				totalSumElClass = "JiraEstimatesSum-TotalSum--nextGen";
 
-				observeColSelector = '.__board-test-hook__card-list-container';
-				observeIssuesSelector = '[data-test-id="platform-board-kit.ui.card.card"]';
+				observeColSelector = ".__board-test-hook__card-list-container";
+				observeIssuesSelector =
+					'[data-test-id="platform-board-kit.ui.card.card"]';
 			}
 		},
 
-		setupElements: function() {
+		setupElements: function () {
 			if (this.isBoardTypeClassic) {
 				this.$headerCols = $(headerColsSelector);
 			} else if (this.isBoardTypeNextGen) {
@@ -98,7 +102,7 @@
 			}
 		},
 
-		determineEstimateType: function() {
+		determineEstimateType: function () {
 			$estimates = $(`${laneColsSelector} ${estimateSelector}`);
 
 			return $estimates
@@ -106,32 +110,31 @@
 					if (this.isBoardTypeClassic) {
 						return $estimate.textContent;
 					} else if (this.isBoardTypeNextGen) {
-						return $estimate.lastChild.lastChild.children[0].lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.textContent;
+						return $estimate.lastChild.lastChild.children[0]
+							.lastChild.lastChild.lastChild.lastChild.lastChild
+							.lastChild.lastChild.lastChild.textContent;
 					}
 				})
-				.filter((estimate) => typeof estimate === 'string')
-				.some((estimate) => timeEstimateChars.some(
-					(char) =>
-						estimate.includes(char)
-					)
+				.filter((estimate) => typeof estimate === "string")
+				.some((estimate) =>
+					timeEstimateChars.some((char) => estimate.includes(char))
 				);
 		},
 
-		formatTimeSum: function(timeEstimates = []) {
+		formatTimeSum: function (timeEstimates = []) {
 			const parsedEstimates = timeEstimates.map((estimate) => {
-
 				let sortedEstimates = {};
 
-				estimate.split(' ').forEach((segment) => {
-					const timeSegment = timeEstimateChars.filter(
-						(char) => segment.includes(char)
+				estimate.split(" ").forEach((segment) => {
+					const timeSegment = timeEstimateChars.filter((char) =>
+						segment.includes(char)
 					);
 
 					if (timeSegment.length > 0) {
 						const timeValue = segment.split(timeSegment)[0];
 						sortedEstimates[timeSegment] = parseInt(timeValue);
 					}
-				})
+				});
 
 				return sortedEstimates;
 			});
@@ -142,7 +145,8 @@
 				if (timeEstimate) {
 					for (let [key, value] of Object.entries(timeEstimate)) {
 						if (laneEstimates[key]) {
-							laneEstimates[key] = Number(laneEstimates[key]) + Number(value);
+							laneEstimates[key] =
+								Number(laneEstimates[key]) + Number(value);
 						} else {
 							laneEstimates[key] = value;
 						}
@@ -154,43 +158,43 @@
 			 * Sum up values to jira defaults (60m, 8h, 5d)
 			 */
 
-			if (laneEstimates['m'] && laneEstimates['m'] >= 60) {
-				const extraHours = Math.floor(laneEstimates['m'] / 60);
+			if (laneEstimates["m"] && laneEstimates["m"] >= 60) {
+				const extraHours = Math.floor(laneEstimates["m"] / 60);
 
-				laneEstimates['m'] = laneEstimates['m'] % 60;
+				laneEstimates["m"] = laneEstimates["m"] % 60;
 
-				if (laneEstimates['h']) {
-					laneEstimates['h'] = laneEstimates['h'] + extraHours;
+				if (laneEstimates["h"]) {
+					laneEstimates["h"] = laneEstimates["h"] + extraHours;
 				} else {
-					laneEstimates['h'] = extraHours;
+					laneEstimates["h"] = extraHours;
 				}
 			}
 
-			if (laneEstimates['h'] && laneEstimates['h'] >= 8) {
-				const extraDays = Math.floor(laneEstimates['h'] / 8);
+			if (laneEstimates["h"] && laneEstimates["h"] >= 8) {
+				const extraDays = Math.floor(laneEstimates["h"] / 8);
 
-				laneEstimates['h'] = laneEstimates['h'] % 8;
+				laneEstimates["h"] = laneEstimates["h"] % 8;
 
-				if (laneEstimates['d']) {
-					laneEstimates['d'] = laneEstimates['d'] + extraDays;
+				if (laneEstimates["d"]) {
+					laneEstimates["d"] = laneEstimates["d"] + extraDays;
 				} else {
-					laneEstimates['d'] = extraDays;
+					laneEstimates["d"] = extraDays;
 				}
 			}
 
-			if (laneEstimates['d'] && laneEstimates['d'] >= 5) {
-				const extraWeeks = Math.floor(laneEstimates['d'] / 5);
+			if (laneEstimates["d"] && laneEstimates["d"] >= 5) {
+				const extraWeeks = Math.floor(laneEstimates["d"] / 5);
 
-				laneEstimates['d'] = laneEstimates['d'] % 5;
+				laneEstimates["d"] = laneEstimates["d"] % 5;
 
-				if (laneEstimates['w']) {
-					laneEstimates['w'] = laneEstimates['w'] + extraWeeks;
+				if (laneEstimates["w"]) {
+					laneEstimates["w"] = laneEstimates["w"] + extraWeeks;
 				} else {
-					laneEstimates['w'] = extraWeeks;
+					laneEstimates["w"] = extraWeeks;
 				}
 			}
 
-			let formattedSum = '';
+			let formattedSum = "";
 
 			/**
 			 * Add up values by key and sort them properly.
@@ -205,27 +209,30 @@
 		},
 
 		countDecimals: function (value) {
-			return value.toString().split('.')[1]?.length || 0;
+			return value.toString().split(".")[1]?.length || 0;
 		},
 
-		formatNumberSum: function(numberEstimates = []) {
+		formatNumberSum: function (numberEstimates = []) {
 			const parsedEstimates = numberEstimates
 				.map((estimate) => parseFloat(estimate))
-				.filter((item) => typeof item === 'number' && !Number.isNaN(item));
+				.filter(
+					(item) => typeof item === "number" && !Number.isNaN(item)
+				);
 
-			const decimalCount = parsedEstimates
-				.map((number) => this.countDecimals(number));
-
-			const maxDecimals = Math.max(
-				...decimalCount
+			const decimalCount = parsedEstimates.map((number) =>
+				this.countDecimals(number)
 			);
 
+			const maxDecimals = Math.max(...decimalCount);
+
 			return parsedEstimates.reduce((sum, current) => {
-				return Number((Number(sum) + Number(current)).toFixed(maxDecimals));
+				return Number(
+					(Number(sum) + Number(current)).toFixed(maxDecimals)
+				);
 			}, 0);
 		},
 
-		sumCols: function() {
+		sumCols: function () {
 			const columnIds = this.$headerCols.map(($column) => {
 				if (this.isBoardTypeNextGen) {
 					return $column.dataset.rbdDragHandleDraggableId;
@@ -238,7 +245,8 @@
 				let columnHasEstimateEls = false;
 				const $laneCols = $(laneColsSelector);
 
-				const columnSum = $laneCols.filter(($laneCol) => {
+				const columnSum = $laneCols
+					.filter(($laneCol) => {
 						if (this.isBoardTypeClassic) {
 							return $laneCol.dataset.columnId === id;
 						} else if (this.isBoardTypeNextGen) {
@@ -246,34 +254,50 @@
 						}
 					})
 					.reduce((laneColSum, $laneCol) => {
-
 						let $estimates;
 
 						if (this.isBoardTypeClassic) {
-							$estimates = Array.from($laneCol.querySelectorAll(estimateSelector));
+							$estimates = Array.from(
+								$laneCol.querySelectorAll(estimateSelector)
+							);
 						} else if (this.isBoardTypeNextGen) {
-							$estimates = Array.from($laneCol.querySelectorAll(estimateSelector)).map(($issue) => {
-								return $issue.lastChild.lastChild.children[0].lastChild.lastChild
-									.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild;
+							$estimates = Array.from(
+								$laneCol.querySelectorAll(estimateSelector)
+							).map(($issue) => {
+								return $issue.lastChild.lastChild.children[0]
+									.lastChild.lastChild.lastChild.lastChild
+									.lastChild.lastChild.lastChild.lastChild;
 							});
 						}
 
 						if ($estimates.length) {
 							columnHasEstimateEls = true;
 
-							const estimatesSum = $estimates.reduce((sum, $estimate) => {
-								return this.areEstimatesTime ?
-									this.formatTimeSum([sum, $estimate.textContent]) :
-									this.formatNumberSum([sum, $estimate.textContent]);
-							}, '');
+							const estimatesSum = $estimates.reduce(
+								(sum, $estimate) => {
+									return this.areEstimatesTime
+										? this.formatTimeSum([
+												sum,
+												$estimate.textContent,
+										  ])
+										: this.formatNumberSum([
+												sum,
+												$estimate.textContent,
+										  ]);
+								},
+								""
+							);
 
-							return this.areEstimatesTime ?
-								this.formatTimeSum([laneColSum, estimatesSum]) :
-								this.formatNumberSum([laneColSum, estimatesSum]);
+							return this.areEstimatesTime
+								? this.formatTimeSum([laneColSum, estimatesSum])
+								: this.formatNumberSum([
+										laneColSum,
+										estimatesSum,
+								  ]);
 						} else {
 							return laneColSum;
 						}
-					}, '');
+					}, "");
 
 				/**
 				 * Kanban board has no estimate elements shown,
@@ -287,8 +311,8 @@
 			});
 		},
 
-		writeColSum: function() {
-			Object.entries(this.colSumById).forEach(([ id, colSum ]) => {
+		writeColSum: function () {
+			Object.entries(this.colSumById).forEach(([id, colSum]) => {
 				const $targetCol = this.$headerCols.find(($column) => {
 					if (this.isBoardTypeClassic) {
 						return $column.dataset.id === id;
@@ -307,25 +331,30 @@
 				 * To avoid a styled element with no content,
 				 * append an element only if it has a number as content
 				 */
-				if (typeof colSum === 'number' || colSum.length > 0) {
-					const $colSum = this.generateSumElement(colSumElClass, colSum);
+				if (typeof colSum === "number" || colSum.length > 0) {
+					const $colSum = this.generateSumElement(
+						colSumElClass,
+						colSum
+					);
 
 					$targetCol.children[0]?.appendChild($colSum);
 				}
 			});
 		},
 
-		writeTotalSum: function() {
-			const totalSum = Object.values(this.colSumById)
-				.reduce((total, colSum) => {
-					if (typeof colSum === 'number' || colSum.length > 0) {
-						return this.areEstimatesTime ?
-							this.formatTimeSum([total, colSum]) :
-							this.formatNumberSum([total, colSum]);
+		writeTotalSum: function () {
+			const totalSum = Object.values(this.colSumById).reduce(
+				(total, colSum) => {
+					if (typeof colSum === "number" || colSum.length > 0) {
+						return this.areEstimatesTime
+							? this.formatTimeSum([total, colSum])
+							: this.formatNumberSum([total, colSum]);
 					} else {
 						return total;
 					}
-				}, '');
+				},
+				""
+			);
 
 			/**
 			 * Remove existing element on refresh
@@ -337,15 +366,19 @@
 			 * To avoid a styled element with no content,
 			 * append an element only if it has a number as content
 			 */
-			if (typeof totalSum === 'number' || totalSum.length > 0) {
-				const $totalSum = this.generateSumElement(totalSumElClass, totalSum);
+			if (typeof totalSum === "number" || totalSum.length > 0) {
+				const $totalSum = this.generateSumElement(
+					totalSumElClass,
+					totalSum
+				);
 
-				document.querySelector(sprintTitleSelector)
+				document
+					.querySelector(sprintTitleSelector)
 					.appendChild($totalSum);
 			}
 		},
 
-		generateSumElement: function(cssClass, content) {
+		generateSumElement: function (cssClass, content) {
 			const $el = document.createElement(sumElTag);
 			$el.classList.add(cssClass);
 			$el.textContent = content;
@@ -353,25 +386,25 @@
 			return $el;
 		},
 
-		setupObserverOptions: function() {
+		setupObserverOptions: function () {
 			let observerConfig = [];
 
 			if (this.isBoardTypeClassic) {
 				observerConfig = [
 					// swimlanes
 					{
-						$elements: $('.ghx-pool'),
-						options:  { childList: true }
+						$elements: $(".ghx-pool"),
+						options: { childList: true },
 					},
 					// issues
 					{
-						$elements: $('.ghx-wrap-issue'),
-						options:  { childList: true }
+						$elements: $(".ghx-wrap-issue"),
+						options: { childList: true },
 					},
 					// refresh
 					{
-						$elements: $('.ghx-column-header-group'),
-						options:  { attributes: true }
+						$elements: $(".ghx-column-header-group"),
+						options: { attributes: true },
 					},
 				];
 			} else if (this.isBoardTypeNextGen) {
@@ -379,23 +412,24 @@
 					// cols
 					{
 						$elements: $(observeColSelector),
-						options:  { childList: true }
+						options: { childList: true },
 					},
 					// estimates
 					{
 						$elements: $(estimateSelector).map(($issue) => {
-							return $issue.lastChild.lastChild.children[0].lastChild.lastChild
-							.lastChild.lastChild.lastChild.lastChild.lastChild;
+							return $issue.lastChild.lastChild.children[0]
+								.lastChild.lastChild.lastChild.lastChild
+								.lastChild.lastChild.lastChild;
 						}),
-						options:  { childList: true }
-					}
+						options: { childList: true },
+					},
 				];
 			}
 
 			return observerConfig;
 		},
 
-		startObservers: function(observerConfig) {
+		startObservers: function (observerConfig) {
 			const observerCallback = (mutationsList, observer) => {
 				this.stopObservers();
 				setTimeout(() => {
@@ -414,32 +448,31 @@
 			});
 		},
 
-		stopObservers: function() {
+		stopObservers: function () {
 			this.observer?.disconnect();
 		},
 
-		startBackgroundScriptListeners: function() {
-			chrome.runtime.sendMessage({ startListening : true }, (response, error) => {
-				if (
-					response.action === 'backgroundListeningToTab'
-				) {
-					chrome.runtime.onMessage.addListener((message) => {
-						if (
-							message?.action === 'onActivated' ||
-							message?.action === 'onHistoryStateUpdated'
-						) {
-							this.stopObservers();
-							setTimeout(() => {
-								this.main();
-							}, 500);
-
-						}
-					});
+		startBackgroundScriptListeners: function () {
+			chrome.runtime.sendMessage(
+				{ startListening: true },
+				(response, error) => {
+					if (response.action === "backgroundListeningToTab") {
+						chrome.runtime.onMessage.addListener((message) => {
+							if (
+								message?.action === "onActivated" ||
+								message?.action === "onHistoryStateUpdated"
+							) {
+								this.stopObservers();
+								setTimeout(() => {
+									this.main();
+								}, 500);
+							}
+						});
+					}
 				}
-			});
-		}
-
+			);
+		},
 	};
 
 	JiraEstimatesSum.init();
-}());
+})();
