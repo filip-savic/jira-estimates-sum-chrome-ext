@@ -43,7 +43,7 @@
 		setupBoardType: function () {
 			const $laneColsClassic = $(".ghx-swimlane .ghx-column");
 			const $laneColsNextGen = $(
-				'[data-test-id="platform-board-kit.ui.board.scroll.board-scroll"]'
+				'[data-testid="platform-board-kit.ui.board.scroll.board-scroll"]'
 			);
 
 			if ($laneColsClassic.length) {
@@ -76,11 +76,11 @@
 				observeRefreshSelector = ".ghx-column-header-group";
 			} else if (this.isBoardTypeNextGen) {
 				headerColsSelector =
-					'[data-test-id="platform-board-kit.common.ui.column-header.header.column-header-container"]';
+					'[data-testid="platform-board-kit.common.ui.column-header.header.column-header-container"]';
 				laneColsSelector =
 					'[data-component-selector="platform-board-kit.ui.column.draggable-column"]';
 				estimateSelector =
-					'[data-testid="software-board.common.fields.estimate-field.static.estimate-wrapper"]';
+					'[data-testid="platform-card.common.ui.estimate.badge"]';
 
 				sprintTitleSelector =
 					'[data-test-id="software-board.board"] h1';
@@ -91,7 +91,7 @@
 				observeColSelector =
 					'[data-component-selector="platform-board-kit.ui.column.draggable-column"]';
 				observeIssuesSelector =
-					'[data-test-id="platform-board-kit.ui.card.card"]';
+					'[data-testid="platform-board-kit.ui.card.card"]';
 			}
 		},
 
@@ -234,9 +234,9 @@
 		},
 
 		sumCols: function () {
-			const columnIds = this.$headerCols.map(($column) => {
+			const columnIds = this.$headerCols.map(($column, idx) => {
 				if (this.isBoardTypeNextGen) {
-					return $column.dataset.rbdDragHandleDraggableId;
+					return idx;
 				} else if (this.isBoardTypeClassic) {
 					return $column.dataset.id;
 				}
@@ -247,11 +247,11 @@
 				const $laneCols = $(laneColsSelector);
 
 				const columnSum = $laneCols
-					.filter(($laneCol) => {
+					.filter(($laneCol, idx) => {
 						if (this.isBoardTypeClassic) {
 							return $laneCol.dataset.columnId === id;
 						} else if (this.isBoardTypeNextGen) {
-							return $laneCol.dataset.rbdDraggableId.includes(id);
+							return (idx % columnIds.length) === id;
 						}
 					})
 					.reduce((laneColSum, $laneCol) => {
@@ -312,11 +312,11 @@
 
 		writeColSum: function () {
 			Object.entries(this.colSumById).forEach(([id, colSum]) => {
-				const $targetCol = this.$headerCols.find(($column) => {
+				const $targetCol = this.$headerCols.find(($column, idx) => {
 					if (this.isBoardTypeClassic) {
 						return $column.dataset.id === id;
 					} else if (this.isBoardTypeNextGen) {
-						return $column.dataset.rbdDragHandleDraggableId === id;
+						return idx == id;
 					}
 				});
 
@@ -336,7 +336,7 @@
 						colSum
 					);
 
-					$targetCol.children[0]?.appendChild($colSum);
+					$targetCol.children[0]?.prepend($colSum);
 				}
 			});
 		},
