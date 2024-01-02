@@ -80,7 +80,7 @@
 				laneColsSelector =
 					'[data-component-selector="platform-board-kit.ui.column.draggable-column"]';
 				estimateSelector =
-					'[data-testid="platform-card.common.ui.estimate.badge"]';
+					'[data-testid="platform-card.common.ui.estimate.badge"], [data-testid="software-board.common.fields.estimate-field.static.estimate-wrapper"]';
 
 				sprintTitleSelector =
 					'[data-test-id="software-board.board"] h1';
